@@ -3,7 +3,9 @@ package com.example.todo_server.web.controller;
 import com.example.todo_server.constants.TaskStatus;
 import com.example.todo_server.model.Task;
 import com.example.todo_server.service.TaskService;
+import com.example.todo_server.web.vo.ResultResponse;
 import com.example.todo_server.web.vo.TaskRequest;
+import com.example.todo_server.web.vo.TaskStatusRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +63,30 @@ public class TaskController {
     public ResponseEntity<List<Task>> getByStatus(@PathVariable TaskStatus status){
         var result = this.taskService.getByStatus(status);
         return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask(@PathVariable Long id,@RequestBody TaskRequest task){
+        var result = this.taskService.update(id, task.getTitle(), task.getDescription(), task.getDueDate());
+        return ResponseEntity.ok(result);
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Task> updateTaskStatus(@PathVariable Long id,@RequestBody TaskStatusRequest req){
+        System.out.println(req);
+        var result = taskService.updateStatus(id, req.getStatus());
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResultResponse> deleteTask(@PathVariable Long id){
+        var result = taskService.delete(id);
+        return ResponseEntity.ok(new ResultResponse(result));
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<TaskStatus[]> getAllStatus(){
+        var status=  TaskStatus.values();
+        return ResponseEntity.ok(status);
     }
 }
